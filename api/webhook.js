@@ -12,15 +12,15 @@ async function tg(method, body) {
 }
 
 async function sendMsg(chatId, text, extra = {}) {
-  return tg("sendMessage", { chat_id: chatId, text, parse_mode: "HTML", ...extra });
+  return tg("sendMessage", { chat_id: chatId, text, parse_mode: "Markdown", ...extra });
 }
 
 async function sendPhoto(chatId, photo, caption = "") {
-  return tg("sendPhoto", { chat_id: chatId, photo, caption, parse_mode: "HTML" });
+  return tg("sendPhoto", { chat_id: chatId, photo, caption, parse_mode: "Markdown" });
 }
 
 async function sendVideo(chatId, video, caption = "") {
-  return tg("sendVideo", { chat_id: chatId, video, caption, parse_mode: "HTML" });
+  return tg("sendVideo", { chat_id: chatId, video, caption, parse_mode: "Markdown" });
 }
 
 async function forwardToOwners(text) {
