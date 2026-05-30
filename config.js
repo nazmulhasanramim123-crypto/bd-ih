@@ -15,8 +15,8 @@ module.exports = {
     }
   },
   bkash: {
-    number: "BKASH_NUMBER",
-    name: "BKASH_NAME",
+    number: "01700000000",
+    name: "Bangladesh Income Hub",
     type: "Send Money"
   },
   intents: {
