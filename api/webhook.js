@@ -245,7 +245,18 @@ ${cfg.ownerTelegram} এ পাঠান:
 ✅ Indicator setup সম্পন্ন
 ✅ Confirmation message
 
-আল্লাহ আপনার ব্যবসায় বরকত দিন! 🤲`);
+━━━━━━━━━━━━━━━━━━
+🎁 *আমাদের সাথে পাচ্ছেন:*
+━━━━━━━━━━━━━━━━━━
+
+✅ ২৪ ঘন্টার মধ্যে সম্পূর্ণ setup
+✅ Lifetime support
+✅ Money management guidance
+✅ Risk management guidance
+
+📞 যোগাযোগ: @BANGLADESH_IH
+
+আল্লাহ বরকত দিন! 🤲\`);
 
       } else if (cmd === "/products") {
         await sendMsg(chatId,
