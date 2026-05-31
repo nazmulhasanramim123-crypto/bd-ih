@@ -1,5 +1,5 @@
 module.exports = {
-  owners: ["8191161231"],
+  owners: [],
 
   // ================================================
   // PRODUCTS — নতুন indicator add করতে এখানে যোগ করো
@@ -30,7 +30,7 @@ module.exports = {
   // BKASH INFO
   // ================================================
   bkash: {
-    number: "01700000000",
+    number: "01570203715",
     name: "Bangladesh Income Hub",
     type: "Send Money"
   },
@@ -38,7 +38,7 @@ module.exports = {
   // ================================================
   // OWNER CONTACT
   // ================================================
-  ownerTelegram: "@NazmulHasan95",
+  ownerTelegram: "@BANGLADESH_IH",
 
   // ================================================
   // INTENT KEYWORDS
