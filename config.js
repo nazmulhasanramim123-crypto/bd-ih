@@ -38,7 +38,7 @@ module.exports = {
   // ================================================
   // OWNER CONTACT
   // ================================================
-  ownerTelegram: "@BANGLADESH_IH",
+  ownerTelegram: "@NazmulHasan95",
 
   // ================================================
   // INTENT KEYWORDS
