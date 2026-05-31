@@ -1,4 +1,4 @@
-   const cfg = require("../config");
+const cfg = require("../config");
 const TG = `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}`;
 const GROQ_KEY = process.env.GROQ_API_KEY;
 
@@ -28,21 +28,21 @@ async function forwardToOwners(text) {
 }
 
 async function groqReply(messages) {
-  const p = Object.values(cfg.products)[0];
-  const system = `You are Bangladesh Income Hub professional AI sales assistant. Always reply in Bangla. Be professional and friendly. Use "ভাইজান" and "আপনি". Use Islamic greetings.
+  const productList = Object.values(cfg.products)
+    .map(p => `${p.name}: ${p.price}`).join(", ");
 
-You know:
-- Product: ${p.name} - ${p.price}
-- Description: ${p.description}
-- Features: ${p.features.join(", ")}
+  const system = `তুমি Bangladesh Income Hub এর professional AI sales assistant। সবসময় Bangla তে reply করবে। ভদ্র এবং professional হবে। "ভাইজান" এবং "আপনি" ব্যবহার করবে।
+
+তুমি জানো:
+- Products: ${productList}
 - bKash: ${cfg.bkash.number} (${cfg.bkash.name})
-- Support: @NazmulHasan95
+- Support: ${cfg.ownerTelegram}
 
-Rules:
-- Guide to /buy for purchase
-- After payment screenshot ask for TradingView credentials
-- After credentials say 24 hours delivery
-- Keep replies short and helpful`;
+নিয়ম:
+- কিনতে চাইলে /buy লিখতে বলো
+- Support এর জন্য ${cfg.ownerTelegram} এ যেতে বলো
+- সংক্ষিপ্ত এবং helpful reply দাও
+- কখনো false promise করো না`;
 
   const msgs = [{ role: "system", content: system }];
   for (const h of messages) {
@@ -64,9 +64,10 @@ Rules:
       })
     });
     const data = await res.json();
-    return data?.choices?.[0]?.message?.content || "দুঃখিত ভাইজান, সমস্যা হচ্ছে। @NazmulHasan95 এ যোগাযোগ করুন।";
+    return data?.choices?.[0]?.message?.content ||
+      `দুঃখিত ভাইজান, সমস্যা হচ্ছে। ${cfg.ownerTelegram} এ যোগাযোগ করুন।`;
   } catch (e) {
-    return "দুঃখিত ভাইজান, reply দিতে পারছি না। @NazmulHasan95 এ যোগাযোগ করুন।";
+    return `দুঃখিত ভাইজান, reply দিতে পারছি না। ${cfg.ownerTelegram} এ যোগাযোগ করুন।`;
   }
 }
 
@@ -76,6 +77,12 @@ function detectIntent(text) {
     if (keywords.some(k => t.includes(k))) return intent;
   }
   return "general";
+}
+
+function buildProductList() {
+  return Object.values(cfg.products)
+    .map((p, i) => `${i + 1}. *${p.name}*\n   💰 ${p.price}`)
+    .join("\n\n");
 }
 
 const conversations = {};
@@ -89,40 +96,25 @@ const WELCOME = `আসসালামু আলাইকুম ওয়ার�
 
 *বাংলাদেশ ইনকাম হাব* এ আপনাকে স্বাগতম ভাইজান!
 
-আমরা Professional TradingView Indicators তৈরি ও বিক্রি করি।
+আমরা Professional TradingView Indicators তৈরি ও সরবরাহ করি।
 
 ━━━━━━━━━━━━━━━━━━
-📊 *Featured Product:*
+📊 *আমাদের Service:*
 ━━━━━━━━━━━━━━━━━━
 
-🔥 *BDIH Final Version Indicator*
-
-✅ Non-Repaint — signal কখনো পরিবর্তন হয় না
-✅ Non-MTG — অত্যন্ত accurate
-✅ প্রতিদিন ২৫০+ trading signal
-✅ Entry, Take Profit ও Stop Loss সহ
-✅ সকল timeframe এ কার্যকর
-
-💰 *মূল্য: মাত্র 5,000 BDT*
-~~নিয়মিত মূল্য: 10,000 BDT~~
+আমরা আপনার জন্য:
+✅ নতুন TradingView account তৈরি করি
+✅ Indicator setup করে দিই
+✅ ২৪ ঘন্টার মধ্যে সব সম্পন্ন করি
 
 ━━━━━━━━━━━━━━━━━━
-🛒 *মাত্র ৩টি ধাপে পান:*
+📌 *Quick Menu:*
 ━━━━━━━━━━━━━━━━━━
 
-1️⃣ bKash এ payment করুন
-2️⃣ Payment screenshot পাঠান
-3️⃣ TradingView email ও password দিন
-→ ২৪ ঘন্টায় indicator set হবে ✅
-
-━━━━━━━━━━━━━━━━━━
-📌 *Menu:*
-━━━━━━━━━━━━━━━━━━
-
-/indicator — বিস্তারিত জানুন
-/buy — কেনার নিয়ম
-/products — সকল products
-/support — সাহায্য
+/indicator — Indicator সম্পর্কে জানুন
+/buy — কেনার সম্পূর্ণ গাইড
+/products — সকল products দেখুন
+/support — সাহায্য বা যোগাযোগ
 
 যেকোনো প্রশ্ন করুন ভাইজান! 🤝`;
 
@@ -140,113 +132,167 @@ export default async function handler(req, res) {
     const video = message.video;
     const isOwner = cfg.owners.includes(chatId);
 
+    // Owner → Client reply
     if (isOwner && text.startsWith("REPLY:")) {
       const parts = text.replace("REPLY:", "").split(":");
       const targetId = parts[0].trim();
       const replyText = parts.slice(1).join(":").trim();
       if (targetId && replyText) {
-        await sendMsg(targetId, `📩 *Bangladesh Income Hub:*\n\n${replyText}`);
-        await sendMsg(chatId, `✅ Delivered to ${targetId}`);
+        await sendMsg(targetId,
+          `📩 *Bangladesh Income Hub — Team Message:*\n\n${replyText}\n\n_আরো সাহায্যের জন্য ${cfg.ownerTelegram} এ যোগাযোগ করুন।_`);
+        await sendMsg(chatId, `✅ Message delivered to client (${targetId})`);
       }
       return res.status(200).json({ ok: true });
     }
 
+    // Owner → Client media
     if (isOwner && (photo || video) && message.caption) {
       const targetId = message.caption.match(/\d{6,}/)?.[0];
       if (targetId) {
-        if (photo) await sendPhoto(targetId, photo[photo.length - 1].file_id, "📊 Bangladesh Income Hub");
-        if (video) await sendVideo(targetId, video.file_id, "🎥 Bangladesh Income Hub");
-        await sendMsg(chatId, `✅ Media sent to ${targetId}`);
+        if (photo) await sendPhoto(targetId, photo[photo.length - 1].file_id,
+          "📊 Bangladesh Income Hub — আপনার indicator ready!");
+        if (video) await sendVideo(targetId, video.file_id,
+          "🎥 Bangladesh Income Hub — Team message");
+        await sendMsg(chatId, `✅ Media delivered to client (${targetId})`);
         return res.status(200).json({ ok: true });
       }
     }
 
+    // Client → Payment screenshot
     if (!isOwner && photo) {
-      await sendMsg(chatId, `✅ *Payment screenshot পেয়েছি ভাইজান!*
+      await sendMsg(chatId,
+        `✅ *Payment screenshot সফলভাবে পেয়েছি ভাইজান!*
 
 জাযাকাল্লাহ খায়রান! 🙏
 
-এখন আপনার *TradingView login তথ্য* পাঠান:
+এখন শুধু আপনার *নতুন Email এবং Password* পাঠান:
 
-📧 Email: আপনার TradingView email
-🔒 Password: আপনার TradingView password
+📧 *Email:* আপনার নতুন Gmail address
+🔒 *Password:* Gmail এর password
 
-_তথ্য পাওয়ার পর ২৪ ঘন্টার মধ্যে indicator set হবে ইনশাআল্লাহ।_`);
+_সব তথ্য পাওয়ার পর ২৪ ঘন্টার মধ্যে:_
+_✅ TradingView account তৈরি হবে_
+_✅ Indicator setup হবে_
+_✅ আপনাকে জানানো হবে ইনশাআল্লাহ_`);
+
       for (const id of cfg.owners) {
         await sendPhoto(id, photo[photo.length - 1].file_id,
-          `PAYMENT SCREENSHOT\n@${username}\nChat ID: ${chatId}\nReply: REPLY:${chatId}: message`);
+          `💳 নতুন Payment!\n👤 @${username}\nChat ID: ${chatId}\n\nReply: REPLY:${chatId}: message`);
       }
       return res.status(200).json({ ok: true });
     }
 
+    // Client → Video
     if (!isOwner && video) {
-      await forwardToOwners(`Video from @${username} (${chatId})`);
+      await forwardToOwners(`🎥 Video from @${username} (${chatId})`);
       return res.status(200).json({ ok: true });
     }
 
+    // Commands
     if (text.startsWith("/")) {
       const cmd = text.split(" ")[0].toLowerCase();
-      const p = Object.values(cfg.products)[0];
+      const firstProduct = Object.values(cfg.products)[0];
 
       if (cmd === "/start") {
         await sendMsg(chatId, WELCOME);
-        await forwardToOwners(`New user: @${username} (${chatId})`);
+        await forwardToOwners(`👤 New user joined!\n@${username} (ID: ${chatId})`);
+
       } else if (cmd === "/indicator") {
-        await sendMsg(chatId, `📊 *${p.name}*\n\n${p.description}\n\n${p.features.map(f => `✅ ${f}`).join("\n")}\n\n💰 *মূল্য: ${p.price}*\n\nকিনতে /buy লিখুন।`);
+        await sendMsg(chatId,
+          `📊 *${firstProduct.name}*\n\n${firstProduct.description}\n\n${firstProduct.features.map(f => `✅ ${f}`).join("\n")}\n\n💰 *মূল্য: ${firstProduct.price}*\n\nকিনতে /buy লিখুন ভাইজান।`);
+
       } else if (cmd === "/buy") {
-        await sendMsg(chatId, `🛒 *Indicator কেনার নিয়ম:*
+        await sendMsg(chatId,
+          `🛒 *Indicator কেনার সম্পূর্ণ গাইড:*
 
 ━━━━━━━━━━━━━━━━━━
-💳 *Step 1: bKash Payment*
+📊 *আমাদের Available Indicators:*
+━━━━━━━━━━━━━━━━━━
+
+${buildProductList()}
+
+━━━━━━━━━━━━━━━━━━
+📧 *Step 1: নতুন Email তৈরি করুন*
+━━━━━━━━━━━━━━━━━━
+
+প্রথমে একটি নতুন Gmail account তৈরি করুন।
+এই email দিয়ে TradingView account খোলা হবে।
+
+━━━━━━━━━━━━━━━━━━
+💳 *Step 2: bKash Payment করুন*
 ━━━━━━━━━━━━━━━━━━
 
 📱 Number: *${cfg.bkash.number}*
 👤 Name: ${cfg.bkash.name}
-💰 Amount: *${p.price}*
 🔄 Type: ${cfg.bkash.type}
+💰 Amount: আপনার indicator এর মূল্য
 
 ━━━━━━━━━━━━━━━━━━
-📸 *Step 2: Screenshot পাঠান*
+📤 *Step 3: Telegram এ পাঠান*
 ━━━━━━━━━━━━━━━━━━
 
-Payment এর screenshot এই chat এ পাঠান।
+${cfg.ownerTelegram} এ পাঠান:
+✅ bKash payment screenshot
+✅ নতুন Gmail address
+✅ Gmail password
+✅ কোন indicator চান সেটা উল্লেখ করুন
 
 ━━━━━━━━━━━━━━━━━━
-🔑 *Step 3: TradingView তথ্য দিন*
+⏰ *২৪ ঘন্টার মধ্যে পাবেন:*
 ━━━━━━━━━━━━━━━━━━
 
-Email ও password পাঠালে ২৪ ঘন্টায় indicator set হবে।
+✅ নতুন TradingView account
+✅ Indicator setup সম্পন্ন
+✅ Confirmation message
 
-📞 Direct contact: @NazmulHasan95
+আল্লাহ আপনার ব্যবসায় বরকত দিন! 🤲`);
 
-আল্লাহ বরকত দিন! 🤲`);
       } else if (cmd === "/products") {
-        const list = Object.values(cfg.products).map(pr => `✅ *${pr.name}* — ${pr.price}`).join("\n\n");
-        await sendMsg(chatId, `🛍️ *আমাদের সকল Products:*\n\n${list}\n\n📞 Contact: @NazmulHasan95`);
+        await sendMsg(chatId,
+          `🛍️ *Bangladesh Income Hub — সকল Products:*\n\n${buildProductList()}\n\n━━━━━━━━━━━━━━━━━━\nকিনতে /buy লিখুন অথবা সরাসরি যোগাযোগ করুন:\n📞 ${cfg.ownerTelegram}`);
+
       } else if (cmd === "/support") {
-        await sendMsg(chatId, `🆘 *Support Center*\n\nআপনার সমস্যা লিখুন অথবা সরাসরি যোগাযোগ করুন:\n\n📞 @NazmulHasan95`);
-        await forwardToOwners(`Support request: @${username} (${chatId})`);
+        await sendMsg(chatId,
+          `🆘 *Support Center*\n\nআপনার সমস্যা বা প্রশ্ন লিখুন।\n\n📞 Direct contact: ${cfg.ownerTelegram}\n\n_আমাদের team শীঘ্রই সাহায্য করবে ইনশাআল্লাহ।_`);
+        await forwardToOwners(`🆘 Support: @${username} (${chatId})`);
       }
       return res.status(200).json({ ok: true });
     }
 
+    // Client text → AI reply
     if (text && !isOwner) {
       const intent = detectIntent(text);
 
       if (intent === "credentials") {
-        await sendMsg(chatId, `🔑 *TradingView তথ্য পেয়েছি ভাইজান!*
+        await sendMsg(chatId,
+          `🔑 *তথ্য সফলভাবে পেয়েছি ভাইজান!*
 
 জাযাকাল্লাহ খায়রান! 🙏
 
-⏰ *২৪ ঘন্টার মধ্যে indicator set হবে ইনশাআল্লাহ।*
+আমাদের team কাজ শুরু করেছে।
 
-সমস্যায় যোগাযোগ করুন: @NazmulHasan95 ✅`);
-        await forwardToOwners(`CREDENTIALS: @${username} (${chatId})\n${text}\nReply: REPLY:${chatId}: message`);
+⏰ *২৪ ঘন্টার মধ্যে:*
+✅ TradingView account তৈরি হবে
+✅ Indicator setup হবে
+✅ আপনাকে confirm করা হবে
+
+যেকোনো সমস্যায়: ${cfg.ownerTelegram} ✅`);
+
+        await forwardToOwners(
+          `🔑 CREDENTIALS RECEIVED\n👤 @${username} (${chatId})\n📝 ${text}\n\nReply: REPLY:${chatId}: message`);
         return res.status(200).json({ ok: true });
       }
 
-      const labels = { buy: "WANTS TO BUY", video: "WANTS VIDEO", support: "NEEDS SUPPORT", greet: "GREETING", general: "MESSAGE" };
-      await forwardToOwners(`${labels[intent] || "MESSAGE"}\n@${username} (${chatId})\n"${text}"\nReply: REPLY:${chatId}: message`);
+      const labels = {
+        buy: "🛒 WANTS TO BUY",
+        video: "🎥 WANTS VIDEO",
+        support: "🆘 NEEDS SUPPORT",
+        greet: "👋 NEW GREETING",
+        general: "💬 MESSAGE"
+      };
+
+      await forwardToOwners(
+        `${labels[intent] || "💬 MESSAGE"}\n👤 @${username} (${chatId})\n📝 "${text}"\n\nReply: REPLY:${chatId}: message`);
 
       addHistory(chatId, "user", text);
       const reply = await groqReply(conversations[chatId]);
