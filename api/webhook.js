@@ -226,7 +226,7 @@ ${buildProductList()}
 📤 *Step 3: Telegram এ পাঠান*
 ━━━━━━━━━━━━━━━━━━
 
-{  @BANGLADESH_IH  } এ পাঠান:
+{  @BANGLADESH_ IH  } এ পাঠান:
 ✅ bKash payment screenshot
 ✅ নতুন Gmail address
 ✅ Gmail password
