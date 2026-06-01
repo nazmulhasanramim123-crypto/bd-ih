@@ -1,5 +1,5 @@
 module.exports = {
-  owners: ["8191161231"],
+  owners: ["7866563905"],
 
   // ================================================
   // PRODUCTS — নতুন indicator add করতে এখানে যোগ করো
@@ -38,7 +38,7 @@ module.exports = {
   // ================================================
   // OWNER CONTACT
   // ================================================
-  ownerTelegram: "@NazmulHasan95",
+  ownerTelegram: "@BANGLADESH_IH",
 
   // ================================================
   // INTENT KEYWORDS
