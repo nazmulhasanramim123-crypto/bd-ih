@@ -226,7 +226,7 @@ ${buildProductList()}
 📤 *Step 3: Telegram এ পাঠান*
 ━━━━━━━━━━━━━━━━━━
 
-${cfg.ownerTelegram} এ পাঠান:
+( @BANGLADESH_IH ) এ পাঠান:
 ✅ bKash payment screenshot
 ✅ নতুন Gmail address
 ✅ Gmail password
@@ -249,7 +249,7 @@ ${cfg.ownerTelegram} এ পাঠান:
 ✅ Money management guidance
 ✅ Risk management guidance
 
-📞 যোগাযোগ: ${(cfg.ownerTelegram)}
+📞 যোগাযোগ: ( @BANGLADESH_IH ) 
 
 আল্লাহ বরকত দিন! 🤲`);
 
