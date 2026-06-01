@@ -249,7 +249,7 @@ ${cfg.ownerTelegram} এ পাঠান:
 ✅ Money management guidance
 ✅ Risk management guidance
 
-📞 যোগাযোগ: ${cfg.ownerTelegram}
+📞 যোগাযোগ: ${(cfg.ownerTelegram)}
 
 আল্লাহ বরকত দিন! 🤲`);
 
