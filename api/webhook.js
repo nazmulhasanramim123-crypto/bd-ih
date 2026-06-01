@@ -231,6 +231,7 @@ ${buildProductList()}
 ✅ নতুন Gmail address
 ✅ Gmail password
 ✅ কোন indicator চান উল্লেখ করুন
+
 ( বি:দ্র:  telegram এ username লিখার সময় কোনো ফাঁকা জায়গায় রাখবেন না) 
 
 ━━━━━━━━━━━━━━━━━━
@@ -251,6 +252,7 @@ ${buildProductList()}
 ✅ Risk management guidance
 
 📞 যোগাযোগ: @BANGLADESH_ IH  
+
 ( বি:দ্র:  telegram এ username লিখার সময় কোনো ফাঁকা জায়গায় রাখবেন না) 
 আল্লাহ বরকত দিন! 🤲`);
 
