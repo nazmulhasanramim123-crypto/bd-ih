@@ -258,11 +258,11 @@ ${buildProductList()}
 
       } else if (cmd === "/products") {
         await sendMsg(chatId,
-          `🛍️ *Bangladesh Income Hub — সকল Products:*\n\n${buildProductList()}\n\n━━━━━━━━━━━━━━━━━━\nকিনতে /buy লিখুন অথবা যোগাযোগ করুন:\n📞 ${cfg.ownerTelegram}`);
+          ` 🛍️ *Bangladesh Income Hub — সকল Products:*\n\n${buildProductList()}\n\n━━━━━━━━━━━━━━━━━━\nকিনতে /buy লিখুন অথবা যোগাযোগ করুন:\n📞 ${cfg.ownerTelegram}`);
 
       } else if (cmd === "/support") {
         await sendMsg(chatId,
-          `🆘 *Support Center*\n\nআপনার সমস্যা বা প্রশ্ন লিখুন।\n\n📞 Direct contact: ${cfg.ownerTelegram}\n\n_আমাদের team শীঘ্রই সাহায্য করবে ইনশাআল্লাহ।_`);
+          ` 🆘 *Support Center*\n\nআপনার সমস্যা বা প্রশ্ন লিখুন।\n\n📞 Direct contact: ${cfg.ownerTelegram}\n\n_আমাদের team শীঘ্রই সাহায্য করবে ইনশাআল্লাহ।_`);
         await forwardToOwners(`Support: @${username} (${chatId})`);
       }
       return res.status(200).json({ ok: true });
