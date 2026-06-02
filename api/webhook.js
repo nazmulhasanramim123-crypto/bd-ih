@@ -11,8 +11,9 @@ async function tg(method, body) {
   return r.json();
 }
 
+// ✅ FIX 1: parse_mode HTML — underscore (_) সমস্যা দূর হবে
 async function sendMsg(chatId, text) {
-  return tg("sendMessage", { chat_id: chatId, text, parse_mode: "Markdown" });
+  return tg("sendMessage", { chat_id: chatId, text, parse_mode: "HTML" });
 }
 
 async function sendPhoto(chatId, photo, caption) {
@@ -79,9 +80,10 @@ function detectIntent(text) {
   return "general";
 }
 
+// ✅ FIX 2: *bold* এর বদলে <b>bold</b> — HTML format
 function buildProductList() {
   return Object.values(cfg.products)
-    .map((p, i) => `${i + 1}. *${p.name}*\n   💰 ${p.price}`)
+    .map((p, i) => `${i + 1}. <b>${p.name}</b>\n   💰 ${p.price}`)
     .join("\n\n");
 }
 
@@ -92,14 +94,15 @@ function addHistory(chatId, role, text) {
   if (conversations[chatId].length > 10) conversations[chatId].shift();
 }
 
+// ✅ FIX 3: WELCOME message — *bold* → <b>bold</b>
 const WELCOME = `আসসালামু আলাইকুম ওয়ারাহমাতুল্লাহ! 🌙
 
-*বাংলাদেশ ইনকাম হাব* এ আপনাকে স্বাগতম ভাইজান!
+<b>বাংলাদেশ ইনকাম হাব</b> এ আপনাকে স্বাগতম ভাইজান!
 
 আমরা Professional TradingView Indicators তৈরি ও সরবরাহ করি।
 
 ━━━━━━━━━━━━━━━━━━
-📊 *আমাদের Service:*
+📊 <b>আমাদের Service:</b>
 ━━━━━━━━━━━━━━━━━━
 
 আমরা আপনার জন্য:
@@ -108,7 +111,7 @@ const WELCOME = `আসসালামু আলাইকুম ওয়ার�
 ✅ ২৪ ঘন্টার মধ্যে সব সম্পন্ন করি
 
 ━━━━━━━━━━━━━━━━━━
-📌 *Quick Menu:*
+📌 <b>Quick Menu:</b>
 ━━━━━━━━━━━━━━━━━━
 
 /indicator — Indicator সম্পর্কে জানুন
@@ -138,7 +141,7 @@ export default async function handler(req, res) {
       const replyText = parts.slice(1).join(":").trim();
       if (targetId && replyText) {
         await sendMsg(targetId,
-          `📩 *Bangladesh Income Hub — Team Message:*\n\n${replyText}\n\n_আরো সাহায্যের জন্য ${cfg.ownerTelegram} এ যোগাযোগ করুন।_`);
+          `📩 <b>Bangladesh Income Hub — Team Message:</b>\n\n${replyText}\n\n<i>আরো সাহায্যের জন্য ${cfg.ownerTelegram} এ যোগাযোগ করুন।</i>`);
         await sendMsg(chatId, `✅ Message delivered to client (${targetId})`);
       }
       return res.status(200).json({ ok: true });
@@ -158,19 +161,19 @@ export default async function handler(req, res) {
 
     if (!isOwner && photo) {
       await sendMsg(chatId,
-        `✅ *Payment screenshot সফলভাবে পেয়েছি ভাইজান!*
+        `✅ <b>Payment screenshot সফলভাবে পেয়েছি ভাইজান!</b>
 
 জাযাকাল্লাহ খায়রান! 🙏
 
-এখন শুধু আপনার *নতুন Email এবং Password* পাঠান:
+এখন শুধু আপনার <b>নতুন Email এবং Password</b> পাঠান:
 
-📧 *Email:* আপনার নতুন Gmail address
-🔒 *Password:* Gmail এর password
+📧 <b>Email:</b> আপনার নতুন Gmail address
+🔒 <b>Password:</b> Gmail এর password
 
-_সব তথ্য পাওয়ার পর ২৪ ঘন্টার মধ্যে:_
-_✅ TradingView account তৈরি হবে_
-_✅ Indicator setup হবে_
-_✅ আপনাকে জানানো হবে ইনশাআল্লাহ_`);
+<i>সব তথ্য পাওয়ার পর ২৪ ঘন্টার মধ্যে:</i>
+<i>✅ TradingView account তৈরি হবে</i>
+<i>✅ Indicator setup হবে</i>
+<i>✅ আপনাকে জানানো হবে ইনশাআল্লাহ</i>`);
 
       for (const id of cfg.owners) {
         await sendPhoto(id, photo[photo.length - 1].file_id,
@@ -194,48 +197,46 @@ _✅ আপনাকে জানানো হবে ইনশাআল্লা
 
       } else if (cmd === "/indicator") {
         await sendMsg(chatId,
-          `📊 *${firstProduct.name}*\n\n${firstProduct.description}\n\n${firstProduct.features.map(f => `✅ ${f}`).join("\n")}\n\n💰 *মূল্য: ${firstProduct.price}*\n\nকিনতে /buy লিখুন ভাইজান।`);
+          `📊 <b>${firstProduct.name}</b>\n\n${firstProduct.description}\n\n${firstProduct.features.map(f => `✅ ${f}`).join("\n")}\n\n💰 <b>মূল্য: ${firstProduct.price}</b>\n\nকিনতে /buy লিখুন ভাইজান।`);
 
       } else if (cmd === "/buy") {
         await sendMsg(chatId,
-          `🛒 *Indicator কেনার সম্পূর্ণ গাইড:*
+          `🛒 <b>Indicator কেনার সম্পূর্ণ গাইড:</b>
 
 ━━━━━━━━━━━━━━━━━━
-📊 *Available Indicators:*
+📊 <b>Available Indicators:</b>
 ━━━━━━━━━━━━━━━━━━
 
 ${buildProductList()}
 
 ━━━━━━━━━━━━━━━━━━
-📧 *Step 1: নতুন Email তৈরি করুন*
+📧 <b>Step 1: নতুন Email তৈরি করুন</b>
 ━━━━━━━━━━━━━━━━━━
 
 প্রথমে একটি নতুন Gmail account তৈরি করুন।
 এই email দিয়ে TradingView account খোলা হবে।
 
 ━━━━━━━━━━━━━━━━━━
-💳 *Step 2: bKash Payment করুন*
+💳 <b>Step 2: bKash Payment করুন</b>
 ━━━━━━━━━━━━━━━━━━
 
-📱 Number: *${cfg.bkash.number}*
+📱 Number: <b>${cfg.bkash.number}</b>
 👤 Name: ${cfg.bkash.name}
 🔄 Type: ${cfg.bkash.type}
 💰 Amount: আপনার indicator এর মূল্য
 
 ━━━━━━━━━━━━━━━━━━
-📤 *Step 3: Telegram এ পাঠান*
+📤 <b>Step 3: Telegram এ পাঠান</b>
 ━━━━━━━━━━━━━━━━━━
 
-{  @BANGLADESH_ IH  } এ পাঠান:
+${cfg.ownerTelegram} এ পাঠান:
 ✅ bKash payment screenshot
 ✅ নতুন Gmail address
 ✅ Gmail password
 ✅ কোন indicator চান উল্লেখ করুন
 
-( বি:দ্র:  telegram এ username লিখার সময় কোনো ফাঁকা জায়গায় রাখবেন না) 
-
 ━━━━━━━━━━━━━━━━━━
-⏰ *২৪ ঘন্টার মধ্যে পাবেন:*
+⏰ <b>২৪ ঘন্টার মধ্যে পাবেন:</b>
 ━━━━━━━━━━━━━━━━━━
 
 ✅ নতুন TradingView account
@@ -243,7 +244,7 @@ ${buildProductList()}
 ✅ Confirmation message
 
 ━━━━━━━━━━━━━━━━━━
-🎁 *আমাদের সাথে পাচ্ছেন:*
+🎁 <b>আমাদের সাথে পাচ্ছেন:</b>
 ━━━━━━━━━━━━━━━━━━
 
 ✅ ২৪ ঘন্টার মধ্যে সম্পূর্ণ setup
@@ -251,18 +252,18 @@ ${buildProductList()}
 ✅ Money management guidance
 ✅ Risk management guidance
 
-📞 যোগাযোগ: @BANGLADESH_ IH  
-
-( বি:দ্র:  telegram এ username লিখার সময় কোনো ফাঁকা জায়গায় রাখবেন না) 
+📞 যোগাযোগ: ${cfg.ownerTelegram}
 আল্লাহ বরকত দিন! 🤲`);
 
       } else if (cmd === "/products") {
+        // ✅ FIX 4: cfg.ownerTelegram থেকে আসবে — underscore সমস্যা নেই
         await sendMsg(chatId,
-          ` 🛍️ *Bangladesh Income Hub — সকল Products:*\n\n${buildProductList()}\n\n━━━━━━━━━━━━━━━━━━\nকিনতে /buy লিখুন অথবা যোগাযোগ করুন:\n📞 ${cfg.ownerTelegram}`);
+          `🛍️ <b>Bangladesh Income Hub — সকল Products:</b>\n\n${buildProductList()}\n\n━━━━━━━━━━━━━━━━━━\nকিনতে /buy লিখুন অথবা যোগাযোগ করুন:\n📞 ${cfg.ownerTelegram}`);
 
       } else if (cmd === "/support") {
+        // ✅ FIX 5: _italic_ → <i>italic</i> — underscore সমস্যা দূর
         await sendMsg(chatId,
-          ` 🆘 *Support Center*\n\nআপনার সমস্যা বা প্রশ্ন লিখুন।\n\n📞 Direct contact: ${cfg.ownerTelegram}\n\n_আমাদের team শীঘ্রই সাহায্য করবে ইনশাআল্লাহ।_`);
+          `🆘 <b>Support Center</b>\n\nআপনার সমস্যা বা প্রশ্ন লিখুন।\n\n📞 Direct contact: ${cfg.ownerTelegram}\n\n<i>আমাদের team শীঘ্রই সাহায্য করবে ইনশাআল্লাহ।</i>`);
         await forwardToOwners(`Support: @${username} (${chatId})`);
       }
       return res.status(200).json({ ok: true });
@@ -273,13 +274,13 @@ ${buildProductList()}
 
       if (intent === "credentials") {
         await sendMsg(chatId,
-          `🔑 *তথ্য সফলভাবে পেয়েছি ভাইজান!*
+          `🔑 <b>তথ্য সফলভাবে পেয়েছি ভাইজান!</b>
 
 জাযাকাল্লাহ খায়রান! 🙏
 
 আমাদের team কাজ শুরু করেছে।
 
-⏰ *২৪ ঘন্টার মধ্যে:*
+⏰ <b>২৪ ঘন্টার মধ্যে:</b>
 ✅ TradingView account তৈরি হবে
 ✅ Indicator setup হবে
 ✅ আপনাকে confirm করা হবে
