@@ -7,23 +7,42 @@ module.exports = {
   products: {
     bdih_final: {
       name: "BDIH Final Version",
-      price: "5,000 BDT (অফার) | নিয়মিত মূল্য: 10,000 BDT",
-      description: "Non-Repaint, Non-MTG indicator যা প্রতিদিন 250+ accurate signal দেয়। প্রতিটি signal এ Entry, TP এবং SL clearly দেখায়। Signal একবার দিলে আর পরিবর্তন হয় না।",
+      price: "10,000 BDT",
+      description: "Non-Repaint, Non-MTG indicator যা প্রতিদিন 250+ accurate signal দেয়। প্রতিটি signal এ Entry, TP এবং SL clearly দেখায়। Signal একবার দিলে আর পরিবর্তন হয় না। 5-15 minute timeframe এর জন্য সেরা।",
       features: [
         "Non-Repaint — signal কখনো বদলায় না",
         "Non-MTG — highly accurate",
         "প্রতিদিন 250+ signal",
         "Entry, TP এবং SL সহ",
-        "সকল timeframe এ কার্যকর"
+        "5 ও 15 minute timeframe এর জন্য সেরা"
       ]
     },
-    // নতুন indicator add করতে নিচের অংশটা copy করে uncomment করো:
-    // bdih_pro: {
-    //   name: "BDIH Pro Version",
-    //   price: "8,000 BDT",
-    //   description: "বিবরণ লিখুন",
-    //   features: ["feature 1", "feature 2"]
-    // },
+
+    bdih_final_x: {
+      name: "BDIH Final Version X",
+      price: "7,000 BDT",
+      description: "Non-Repaint indicator যা Scalping এর জন্য সেরা। 1-5-15 minute timeframe এ কার্যকর। Market বুঝে signal দেয়, অনেক accurate। কিছু কিছু long signal দেয় যেগুলো entry এর পর market অনেক উপরে বা নিচে যায়।",
+      features: [
+        "Non-Repaint — signal কখনো বদলায় না",
+        "Scalping এর জন্য সেরা",
+        "1, 5 ও 15 minute timeframe এ কার্যকর",
+        "Market বুঝে accurate signal দেয়",
+        "Long signal — entry এর পর market অনেক move করে"
+      ]
+    },
+
+    bdih_combo: {
+      name: "BDIH Combo Pack (Final + Final X)",
+      price: "8,000 BDT (Mega Offer!)",
+      description: "BDIH Final Version এবং BDIH Final Version X একসাথে মাত্র 8,000 টাকায়। Final Version 5-15 minute এর জন্য এবং Final Version X 1 minute এর জন্য — দুইটার সেরা combo।",
+      features: [
+        "BDIH Final Version — 5-15 minute এর জন্য সেরা",
+        "BDIH Final Version X — 1 minute Scalping এর জন্য সেরা",
+        "আলাদা কিনলে 17,000 টাকা — Mega Offer এ 52% ছাড়!",
+        "সাশ্রয় হচ্ছে 9,000 টাকা",
+        "Lifetime support উভয় indicator এ"
+      ]
+    },
   },
 
   // ================================================
