@@ -189,15 +189,16 @@ export default async function handler(req, res) {
 
     if (text.startsWith("/")) {
       const cmd = text.split(" ")[0].toLowerCase();
-      const firstProduct = Object.values(cfg.products)[0];
 
       if (cmd === "/start") {
         await sendMsg(chatId, WELCOME);
         await forwardToOwners(`New user: @${username} (${chatId})`);
 
       } else if (cmd === "/indicator") {
-        await sendMsg(chatId,
-          `📊 <b>${firstProduct.name}</b>\n\n${firstProduct.description}\n\n${firstProduct.features.map(f => `✅ ${f}`).join("\n")}\n\n💰 <b>মূল্য: ${firstProduct.price}</b>\n\nকিনতে /buy লিখুন ভাইজান।`);
+        const allProducts = Object.values(cfg.products)
+          .map(p => `📊 <b>${p.name}</b>\n\n${p.description}\n\n${p.features.map(f => `✅ ${f}`).join("\n")}\n\n💰 <b>মূল্য: ${p.price}</b>`)
+          .join("\n\n━━━━━━━━━━━━━━━━━━\n\n");
+        await sendMsg(chatId, `${allProducts}\n\nকিনতে /buy লিখুন ভাইজান।`);
 
       } else if (cmd === "/buy") {
         await sendMsg(chatId,
